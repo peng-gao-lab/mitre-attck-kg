@@ -22,6 +22,7 @@ ENTITY_WITH_PPT_F = "entities_with_properties"
 LEVEL2_PPT_WITH_PPT_F = "level2_properties"
 RELAT_TYPE_F = "relationship_types"
 
+# The mapping between Mitre ATTACK terms and STIX2.1 terms
 attackToStixTerm = {
     "technique": ["attack-pattern"],
     "tactic": ["x-mitre-tactic"],
@@ -39,3 +40,5 @@ stixToAttackTerm = {
     "course-of-action": "mitigation",
     "x-mitre-matrix": "matrix"
 }
+
+# 

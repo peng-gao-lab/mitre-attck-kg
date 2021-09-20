@@ -1,1 +1,12 @@
-{"x_mitre_contents": ["object_ref", "object_modified"], "external_references": ["source_name", "url", "external_id", "description"]}
+{
+    "x_mitre_contents": [
+        "object_ref",
+        "object_modified"
+    ],
+    "external_references": [
+        "source_name",
+        "url",
+        "external_id",
+        "description"
+    ]
+}

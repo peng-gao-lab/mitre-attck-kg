@@ -1,1 +1,18 @@
-["object_marking_refs", "x_mitre_contents", "kill_chain_phases", "external_references", "x_mitre_data_sources", "x_mitre_domains", "x_mitre_permissions_required", "x_mitre_platforms", "x_mitre_contributors", "x_mitre_system_requirements", "x_mitre_defense_bypassed", "x_mitre_effective_permissions", "x_mitre_impact_type", "aliases", "x_mitre_aliases", "tactic_refs"]
+[
+    "object_marking_refs",
+    "x_mitre_contents",
+    "kill_chain_phases",
+    "external_references",
+    "x_mitre_data_sources",
+    "x_mitre_domains",
+    "x_mitre_permissions_required",
+    "x_mitre_platforms",
+    "x_mitre_contributors",
+    "x_mitre_system_requirements",
+    "x_mitre_defense_bypassed",
+    "x_mitre_effective_permissions",
+    "x_mitre_impact_type",
+    "aliases",
+    "x_mitre_aliases",
+    "tactic_refs"
+]

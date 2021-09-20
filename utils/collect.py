@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 # Get all data
 def getAllData(src):
-    query = [Filter("modified", "<", "2021-09-20T21:33:10.772474Z")]
+    query = [Filter("spec_version", "=", "2.1")]
     allData = src.query(query)
     logging.info("Total items number: {}".format(len(allData)))
     return allData
@@ -91,20 +91,21 @@ def saveStatistic():
     # Save unique entities
     fn = os.path.join(DATA_PATH, MAIN_ENTITY_F + ".json")
     with open(fn, 'w') as fo:
-        json.dump(MAIN_ENTITY, fo)
+        json.dump(MAIN_ENTITY, fo, indent=4)
     fn = os.path.join(DATA_PATH, PPT_ENTITY_F + ".json")
     with open(fn, 'w') as fo:
-        json.dump(PPT_ENTITY, fo)
+        json.dump(PPT_ENTITY, fo, indent=4)
     # Save relationship types
     fn = os.path.join(DATA_PATH, RELAT_TYPE_F + ".json")
     with open(fn, 'w') as fo:
-        json.dump(RELAT_TYPE, fo)
+        json.dump(RELAT_TYPE, fo, indent=4)
     fn = os.path.join(DATA_PATH, ENTITY_WITH_PPT_F + ".json")
+    # Save entities with relationships
     with open(fn, 'w') as fo:
-        json.dump(ENTITY_WITH_PPT, fo)
+        json.dump(ENTITY_WITH_PPT, fo, indent=4)
     fn = os.path.join(DATA_PATH, LEVEL2_PPT_WITH_PPT_F + ".json")
     with open(fn, 'w') as fo:
-        json.dump(LEVEL2_PPT_WITH_PPT, fo)
+        json.dump(LEVEL2_PPT_WITH_PPT, fo, indent=4)
 
 
 def main():
