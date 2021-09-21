@@ -3,6 +3,10 @@
         "object_ref",
         "object_modified"
     ],
+    "kill_chain_phases": [
+        "kill_chain_name",
+        "phase_name"
+    ],
     "external_references": [
         "source_name",
         "url",

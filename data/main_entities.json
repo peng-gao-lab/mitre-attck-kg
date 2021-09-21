@@ -8,5 +8,6 @@
     "malware",
     "tool",
     "x-mitre-tactic",
-    "x-mitre-matrix"
+    "x-mitre-matrix",
+    "marking-definition"
 ]

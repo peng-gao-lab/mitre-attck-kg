@@ -183,5 +183,15 @@
         "x_mitre_domains",
         "x_mitre_modified_by_ref",
         "x_mitre_version"
+    ],
+    "marking-definition": [
+        "type",
+        "spec_version",
+        "id",
+        "created_by_ref",
+        "created",
+        "definition_type",
+        "definition",
+        "x_mitre_domains"
     ]
 }

@@ -1,0 +1,330 @@
+define
+
+################
+## ATTRIBUTES ##
+################
+
+## Common attributes
+types sub attribute,
+    value string;
+id sub attribute,
+    value string;
+name sub attribute,
+    value string;
+spec_version sub attribute,
+    value string;
+created sub attribute,
+    value datetime;
+modified sub attribute,
+    value datetime;
+x_mitre_version sub attribute,
+    value string;
+
+## Other entities attributes
+description sub attribute,
+    value string;
+revoked sub attribute,
+    value boolean;
+x_mitre_detection sub attribute,
+    value string;
+x_mitre_is_subtechnique sub attribute,
+    value boolean;
+x_mitre_network_requirements sub attribute,
+    value boolean;
+x_mitre_remote_support sub attribute,
+    value boolean;
+x_mitre_deprecated sub attribute,
+    value boolean;
+relationship_type sub attribute,
+    value string;
+x_mitre_old_attack_id sub attribute,
+    value string;
+identity_class sub attribute,
+    value string;
+is_family sub attribute,
+    value boolean;
+x_mitre_shortname sub attribute,
+    value string;
+definition_type sub attribute,
+    value string;
+definition sub attribute,
+    value string;
+
+## Sub-entities attributes
+external_id sub attribute,
+    value string;
+url sub attribute,
+    value string;
+source_name sub attribute,
+    value string;
+# description of external reference
+er_description sub attribute,
+    value string;
+kill_chain_name sub attribute,
+    value string;
+phase_name sub attribute,
+    value string;
+
+
+## Listed attributes, an entity may has mutiple attributes
+## e.g., $ap isa attack-pattern, has x_mitre_data_sources "source1",
+## has x_mitre_data_sources "source2"
+x_mitre_data_sources sub attribute,
+    value string;
+# Common domains
+x_mitre_domains sub attribute,
+    value string;
+x_mitre_platforms sub attribute,
+    value string;
+x_mitre_contributors sub attribute,
+    value string;
+x_mitre_impact_type sub attribute,
+    value string;
+x_mitre_effective_permissions sub attribute,
+    value string;
+x_mitre_permissions_required sub attribute,
+    value string;
+aliases sub attribute,
+    value string;
+x_mitre_system_requirements sub attribute,
+    value string;
+x_mitre_aliases sub attribute,
+    value string;
+x_mitre_defense_bypassed sub attribute,
+    value string;
+
+## Common properties that most entities have.
+basic_entity sub entity,
+    abstract,
+    owns id,
+    owns spec_version,
+    owns types,
+    owns name,
+    owns created,
+    owns modified,
+    owns x_mitre_domains,
+    owns x_mitre_version;
+
+
+###################
+## RELATIONSHIPS ##
+###################
+
+## Relations between different entities.
+## Basic relation that has all the common properties
+basic_rel sub relation,
+    abstract,
+    owns id,
+    owns types,
+    owns spec_version,
+    owns created,
+    owns modified,
+    owns relationship_type,
+    owns revoked,
+    owns x_mitre_domains,
+    owns x_mitre_version,
+    owns description,
+    owns x_mitre_deprecated,
+    plays created_by_ref:created,
+    plays object_marking_refs:marked,
+    plays x_mitre_modified_by_ref:modified,
+    plays external_references:owner,
+    relates source_ref,
+    relates target_ref;
+
+use sub basic_rel,
+    relates user as source_ref,
+    relates used as target_ref;
+
+revoked-by sub basic_rel,
+    relates revoked as source_ref,
+    relates revoker as target_ref;
+
+mitigate sub basic_rel,
+    relates mitigator as source_ref,
+    relates mitigated as target_ref;
+
+subtechnique-of sub basic_rel,
+    relates subtech as source_ref,
+    relates supertech as target_ref;
+
+
+## Relations from reference
+tactic_refs sub relation,
+    relates owner,
+    relates listed;
+
+external_references sub relation,
+    relates owner,
+    relates listed;
+
+kill_chain_phases sub relation,
+    relates owner,
+    relates listed;
+
+object_marking_refs sub relation,
+    relates marked,
+    relates ref;
+
+created_by_ref sub relation,
+    relates created,
+    relates ref;
+
+x_mitre_modified_by_ref sub relation,
+    relates modified,
+    relates ref;
+
+
+##############
+## ENTITIES ##
+##############
+## All entities, they are all sub-entities of basic_entity,
+## The particulart properties refer ../data/particular_properties.json
+
+## Main entities
+## identity
+identity sub basic_entity,
+    owns identity_class,
+    owns revoked,
+
+    plays created_by_ref:ref,
+    plays x_mitre_modified_by_ref:ref,
+    plays object_marking_refs:marked;
+    
+## marking-definition
+marking-definition sub entity,
+    owns types,
+    owns id,
+    owns spec_version,
+    owns created,
+    owns definition_type,
+    owns definition,
+    owns x_mitre_domains,
+
+    plays created_by_ref:created,
+    plays object_marking_refs:ref;
+
+## technique => attack-pattern
+technique sub basic_entity,
+    owns description,
+    owns revoked,
+    owns x_mitre_data_sources,
+    owns x_mitre_detection,
+    owns x_mitre_is_subtechnique,
+    owns x_mitre_platforms,
+    owns x_mitre_contributors,
+    owns x_mitre_impact_type,
+    owns x_mitre_effective_permissions,
+    owns x_mitre_permissions_required,
+    owns x_mitre_system_requirements,
+    owns x_mitre_defense_bypassed,
+    owns x_mitre_network_requirements,
+    owns x_mitre_remote_support,
+    owns x_mitre_deprecated,
+
+    plays use:used,
+    plays revoked-by:revoker,
+    plays revoked-by:revoked,
+    plays mitigate:mitigated,
+    plays subtechnique-of:supertech,
+    plays subtechnique-of:subtech,
+
+    plays external_references:owner,
+    plays kill_chain_phases:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## software => malware + tool
+software sub basic_entity,
+    owns description,
+    owns is_family,
+    owns revoked,
+    owns x_mitre_aliases,
+    owns x_mitre_platforms,
+    owns x_mitre_contributors,
+    owns x_mitre_old_attack_id,
+    owns x_mitre_deprecated,
+
+    plays use:used,
+    plays use:user,
+    plays revoked-by:revoker,
+    plays revoked-by:revoked,
+
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## mitigation => course-of-action
+mitigation sub basic_entity,
+    owns description,
+    owns revoked,
+    owns x_mitre_deprecated,
+    owns x_mitre_old_attack_id,
+
+    plays mitigate:mitigator,
+
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## groups => intrusion-set
+groups sub basic_entity,
+    owns description,
+    owns aliases,
+    owns revoked,
+    owns x_mitre_contributors,
+    owns x_mitre_deprecated,
+
+    plays revoked-by:revoker,
+    plays revoked-by:revoked,
+    plays use:user,
+
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## tactic => x-mitre-tactic
+tactic sub basic_entity,
+    owns description,
+    owns x_mitre_shortname,
+
+    plays tactic_refs:listed,
+
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## matrix => x-mitre-matrix
+matrix sub basic_entity,
+    owns description,
+
+    plays tactic_refs:owner,
+
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+
+## Sub-entities
+## external_reference
+external_reference sub entity,
+    owns external_id,
+    owns url,
+    owns er_description,
+    owns source_name,
+
+    plays external_references:listed;
+
+## kill_chain_phase
+kill_chain_phase sub entity,
+    owns kill_chain_name,
+    owns phase_name,
+
+    plays kill_chain_phases:listed;
+

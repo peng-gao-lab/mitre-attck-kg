@@ -19,12 +19,17 @@ def getAllData(src):
 # Get all the available STIX type
 def getEntity(src):
     allData = getAllData(src)
+    # flag = True
     for data in allData:
         if data["type"] not in MAIN_ENTITY:
             MAIN_ENTITY.append(data["type"])
         for key in data.keys():
             if type(data[key]) is list:
-                if type(data[key][0]) is dict and key not in LEVEL2_PPT:
+                # if flag == True and key == "external_references":
+                    # logging.debug("type(data[key][0]): {}".format(type(data[key][0])))
+                    # logging.debug(data[key][0])
+                    # flag = False
+                if type(data[key][0]) is not str and key not in LEVEL2_PPT:
                     LEVEL2_PPT.append(key)
                 if key not in PPT_ENTITY:
                     PPT_ENTITY.append(key)
