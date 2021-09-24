@@ -1,0 +1,11 @@
+## query schema
+match
+$e sub entity; get $e;
+
+## query all entities
+match
+$e isa entity; get $e;
+
+## query identity entities
+match
+$e isa identity, has name $n; get $n;

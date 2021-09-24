@@ -14,7 +14,7 @@ $identity_1 isa identity, has id "identity--c78cb6e5-0c4b-4611-8297-d1b8b55e40b5
             has x_mitre_version "1.0";
 
 $marking-definition_1 isa marking-definition, has id "marking-definition--fa42a846-8d90-4e51-bc29-71d5b4802168",
-            has created 2017-06-01T00:00:00,
+            has created 2017-06-01T00:00:00.000,
             has definition_type "statement",
             has definition "Statement: Copyright 2015-2021, The MITRE Corporation. MITRE ATT&CK and ATT&CK are register 430876 ed trademarks of The MITRE Corporation.",
             has spec_version "2.1",
