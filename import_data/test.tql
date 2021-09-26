@@ -1,0 +1,6 @@
+## Output the mapping between groups and software
+match
+$groups isa groups, has name $gname;
+$software isa software, has name $sname;
+(user: $groups, used: $software) isa use;
+get $gname, $sname;

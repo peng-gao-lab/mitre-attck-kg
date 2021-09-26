@@ -9,6 +9,18 @@ DATA_PATH = os.path.join(os.path.pardir, "data")
 RES_NAME = "group2software"
 logging.basicConfig(level=logging.DEBUG)
 
+# remove revoked and depreceted objects
+# refer to https://github.com/mitre-attack/attack-stix-data/blob/master/USAGE.md#working-with-deprecated-and-revoked-objects
+def remove_revoked_deprecated(stix_objects):
+    """Remove any revoked or deprecated objects from queries made to the data source"""
+    # Note we use .get() because the property may not be present in the JSON data. The default is False
+    # if the property is not set.
+    return list(
+        filter(
+            lambda x: x.get("x_mitre_deprecated", False) is False and x.get("revoked", False) is False,
+            stix_objects
+        )
+    )
 
 def main():
     src = MemoryStore(allow_custom=True)
@@ -25,6 +37,7 @@ def main():
     res = {}
     queryGroups = [Filter("type", "=", "intrusion-set")]
     groups = src.query(queryGroups)
+    groups = remove_revoked_deprecated(groups)
     logging.debug("Groups filtering done. Groups number: {}".format(len(groups)))
 
     # Traverse all groups

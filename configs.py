@@ -36,9 +36,23 @@ stixToAttackTerm = {
     "x-mitre-tactic": "tactic",
     "tool": "software",
     "malware": "software",
-    "intrusion-set": "group",
+    "intrusion-set": "groups",
     "course-of-action": "mitigation",
     "x-mitre-matrix": "matrix"
 }
 
 # 
+RELATION_ACTORS_MAPPING = {
+        "use": ["user", "used"],
+        "mitigate": ["mitigator", "mitigated"],
+        "subtechnique-of": ["subtech", "supertech"],
+        "revoked-by": ["revoked", "revoker"]
+        }
+
+RELATION_TYPE_TRANSFORM = {
+        "uses": "use",
+        "mitigates": "mitigate",
+        "subtechnique-of": "subtechnique-of",
+        "revoked-by": "revoked-by"
+        }
+

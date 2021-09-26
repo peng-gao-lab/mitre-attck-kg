@@ -1,20 +1,29 @@
 #! python3
 # *_template functions definition
+import sys, logging
+sys.path.append("..")
+from configs import *
 
-# Add entities templates
+# Setting
+logging.basicConfig(level=logging.DEBUG)
+
+##############################################
+########### Add entities templates############
+##############################################
+
 # Add string properties
 def addStr(entity, ppt):
     p = entity.get(ppt, None)
     if p:
-        return ', has ' + ppt + '"' + p + '"'
+        return ', has ' + ppt + ' "' + p.replace('"', '*') + '"'
     else:
         return ''
 
 # Add date properties
 def addDate(entity, ppt):
     p = entity.get(ppt, None)
-    if p:
-        return ', has ' + ppt + str(p)[:23]
+    if p and type(p) != str:
+        return ', has ' + ppt + ' ' + p.isoformat()[:19]
     else:
         return ''
 
@@ -22,7 +31,7 @@ def addDate(entity, ppt):
 def addBool(entity, ppt):
     p = entity.get(ppt, None)
     if p:
-        return ', has ' + ppt + str(p).lower()
+        return ', has ' + ppt + ' ' + str(p).lower()
     else:
         return ''
 
@@ -33,7 +42,7 @@ def addList(entity, ppts):
     if not ppt:
         return ''
     for p in ppt:
-        res += ', has ' + ppts + '"' + p +'"'
+        res += ', has ' + ppts + ' "' + p.replace('"', '*') +'"'
     return res
 
 
@@ -54,7 +63,7 @@ def addList(entity, ppts):
     type => types
 '''
 def identity_template(identity):
-    temp = 'insert $identity isa identity, has id "' + identity["id"] + '"'
+    temp = ' $identity isa identity, has id "' + identity["id"] + '"'
     temp += addStr(identity, "types")
     temp += addStr(identity, "name")
     temp += addStr(identity, "spec_version")
@@ -65,7 +74,7 @@ def identity_template(identity):
     temp += addBool(identity, "revoked")
     temp += addStr(identity, "identity_class")
     temp += ';'
-    return temp
+    return [], [temp]
 
 
 '''
@@ -82,16 +91,29 @@ def identity_template(identity):
     type => types
 '''
 def marking_definition_template(marking_definition):
-    temp = 'insert $md isa marking-definition, has id "' + marking_definition["id"] + '""'
+    temp = ' $marking-definition isa marking-definition, has id "' + marking_definition["id"] + '"'
     temp += addStr(marking_definition, "types")
     temp += addStr(marking_definition, "spec_version")
     temp += addDate(marking_definition, "created")
     temp += addStr(marking_definition, "definition_type")
-    temp += ', has definition "' + marking_definition["definition_type"] +
+    temp += ', has definition "' + marking_definition["definition_type"] + \
         marking_definition["definition"][marking_definition["definition_type"]] + '"'
     temp += addList(marking_definition, "x_mitre_domains")
     temp += ';'
-    return temp
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add created_by_ref relation
+    created_by_ref = marking_definition.get("created_by_ref")
+    if not created_by_ref:
+        logging.error("{} does not have created_by_ref property".format(marking_definition))
+    else:
+        tmp_match, tmp_insert = created_by_ref_template("marking-definition", created_by_ref)
+        matches.append(tmp_match)
+        inserts.append(tmp_insert)
+    return matches, inserts
 
 '''
     "attack-pattern": [
@@ -128,7 +150,7 @@ def marking_definition_template(marking_definition):
 '''
 def technique_template(technique):
     # Common properties
-    temp = 'insert $tech isa attack-pattern, has id "' + technique["id"] + '"'
+    temp = ' $technique isa technique, has id "' + technique["id"] + '"'
     temp += addStr(technique, "types")
     temp += addStr(technique, "name")
     temp += addStr(technique, "spec_version")
@@ -150,12 +172,34 @@ def technique_template(technique):
     temp += addList(technique, "x_mitre_defense_bypassed")
     temp += addList(technique, "x_mitre_effective_permissions")
     temp += addList(technique, "x_mitre_impact_type")
-    temp += addList(technique, "x_mitre_network_requirements")
+    temp += addBool(technique, "x_mitre_network_requirements")
     temp += addBool(technique, "x_mitre_remote_support")
     temp += addBool(technique, "x_mitre_deprecated")
-
     temp += ';'
-    return temp
+
+    # Add external_reference
+    count = 0
+    external_references = technique.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "technique", count)
+        count += 1
+
+    # Add kill_chain_phases
+    count = 0
+    kill_chain_phases = technique.get("kill_chain_phases")
+    for kill_chain_phase in kill_chain_phases:
+        temp += kill_chain_phase_template(kill_chain_phase, "technique", count)
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(technique, "technique")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
 
 '''
     "malware": [
@@ -203,7 +247,7 @@ def technique_template(technique):
 '''
 def software_template(software):
     # Common properties
-    temp = 'insert $sw isa software, has id "' + software["id"] + '"'
+    temp = ' $software isa software, has id "' + software["id"] + '"'
     temp += addStr(software, "types")
     temp += addStr(software, "name")
     temp += addStr(software, "spec_version")
@@ -220,9 +264,18 @@ def software_template(software):
     temp += addBool(software, "x_mitre_deprecated")
     temp += addList(software, "x_mitre_aliases")
     temp += addStr(software, "x_mitre_old_attack_id")
-
     temp += ';'
-    return temp
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(software, "software")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
 
 '''
     "intrusion-set": [
@@ -248,7 +301,7 @@ def software_template(software):
 '''
 def groups_template(groups):
     # Common properties
-    temp = 'insert $sw isa groups, has id "' + groups["id"] + '"'
+    temp = ' $groups isa groups, has id "' + groups["id"] + '"'
     temp += addStr(groups, "types")
     temp += addStr(groups, "name")
     temp += addStr(groups, "spec_version")
@@ -263,9 +316,18 @@ def groups_template(groups):
     temp += addList(groups, "x_mitre_contributors")
     temp += addBool(groups, "x_mitre_deprecated")
     temp += addList(groups, "aliases")
-
     temp += ';'
-    return temp
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(groups, "groups")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
 
 
 '''
@@ -291,7 +353,7 @@ def groups_template(groups):
 '''
 def mitigation_template(mitigation):
     # Common properties
-    temp = 'insert $sw isa mitigation, has id "' + mitigation["id"] + '"'
+    temp = ' $mitigation isa mitigation, has id "' + mitigation["id"] + '"'
     temp += addStr(mitigation, "types")
     temp += addStr(mitigation, "name")
     temp += addStr(mitigation, "spec_version")
@@ -304,9 +366,18 @@ def mitigation_template(mitigation):
     temp += addBool(mitigation, "revoked")
     temp += addBool(mitigation, "x_mitre_deprecated")
     temp += addStr(mitigation, "x_mitre_old_attack_id")
-
     temp += ';'
-    return temp
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(mitigation, "mitigation")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
 
 
 '''
@@ -330,7 +401,7 @@ def mitigation_template(mitigation):
 '''
 def tactic_template(tactic):
     # Common properties
-    temp = 'insert $sw isa tactic, has id "' + tactic["id"] + '"'
+    temp = ' $tactic isa tactic, has id "' + tactic["id"] + '"'
     temp += addStr(tactic, "types")
     temp += addStr(tactic, "name")
     temp += addStr(tactic, "spec_version")
@@ -341,9 +412,16 @@ def tactic_template(tactic):
 
     # Particular properties
     temp += addStr(tactic, "x_mitre_shortname")
-
     temp += ';'
-    return temp
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(tactic, "tactic")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+    return matches, inserts
 
 
 '''
@@ -365,9 +443,9 @@ def tactic_template(tactic):
     ],
     type => types
 '''
-def matrix_template(tactic):
+def matrix_template(matrix):
     # Common properties
-    temp = 'insert $sw isa matrix, has id "' + matrix["id"] + '"'
+    temp = ' $matrix isa matrix, has id "' + matrix["id"] + '"'
     temp += addStr(matrix, "types")
     temp += addStr(matrix, "name")
     temp += addStr(matrix, "spec_version")
@@ -378,9 +456,19 @@ def matrix_template(tactic):
 
     # Particular properties
     temp += addStr(matrix, "description")
-
     temp += ';'
-    return temp
+
+    # Add tactic_refs
+    tactic_refs = matrix.get("tactic_refs")
+    matches, inserts = tactic_refs_template("matrix", tactic_refs)
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(matrix, "matrix")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
 
 
 '''
@@ -394,15 +482,23 @@ def matrix_template(tactic):
 external_references sub relation,
     relates owner,
     relates listed;
+
+This template can only be used as a sub-template,
+that means it should be called when inserting other entities.
 '''
-def external_reference_template(external_reference):
-    temp = 'insert $er isa external_reference'
+def external_reference_template(external_reference, owner, count):
+    temp = ' $er{} isa external_reference'.format(count)
     temp += addStr(external_reference, "external_id")
     temp += addStr(external_reference, "url")
     temp += addStr(external_reference, "er_description")
     temp += addStr(external_reference, "source_name")
     temp += ';'
+
+    # external_references_template(owner):
+    temp += ' $ers{} (listed: $er{}, owner: ${}) isa external_references;'.format(count, count, owner)
     return temp
+
+# fun(listed, owner)
 
 
 '''
@@ -410,14 +506,22 @@ def external_reference_template(external_reference):
         "kill_chain_name",
         "phase_name"
     ],
+
+kill_chain_phases sub relation,
+    relates owner,
+    relates listed;
+
+This template can only be used as a sub-template,
+that means it should be called when inserting other entities.
 '''
-def kill_chain_phase_template(kill_chain_phase):
-    temp = 'insert $kcp isa kill_chain_phase'
+def kill_chain_phase_template(kill_chain_phase, owner, count):
+    temp = '$kcp{} isa kill_chain_phase'.format(count)
     temp += addStr(kill_chain_phase, "kill_chain_name")
     temp += addStr(kill_chain_phase, "phase_name")
     temp += ';'
+    # kill_chain_phases_template(owner):
+    temp += '$kcps (listed: $kcp{}, owner: ${}) isa kill_chain_phases;'.format(count, owner)
     return temp
-
 
 
 # Add references templates
@@ -425,12 +529,13 @@ def kill_chain_phase_template(kill_chain_phase):
 created_by_ref sub relation,
     relates created,
     relates ref;
+
+fun(source, tid)
 '''
-def created_by_ref_template(sid, ttype, tid):
-    temp = 'match $source isa ' + ttype +', has id "' + sid + '";'
-    temp += ' $target isa identity, has id "' + tid + '";'
-    temp += " insert (created: $source, ref: $target) isa created_by_ref;"
-    return temp
+def created_by_ref_template(source, tid):
+    match = ' $itarget isa identity, has id "' + tid + '";'
+    insert = " (created: ${}, ref: $itarget) isa created_by_ref;".format(source)
+    return match, insert
 
 
 '''
@@ -438,12 +543,13 @@ object_marking_refs sub relation,
     relates marked,
     relates ref;
 '''
-def object_marking_ref(sid, ttype, tids):
-    temp = 'match $source isa ' + ttype +', has id "' + sid + '";'
+def object_marking_ref_template(source, tids):
+    matches = []
+    inserts = []
     for tid in tids:
-        temp += ' $target isa marking-definition, has id "' + tid + '";'
-        temp += " insert (marked: $source, ref: $target) isa object_marking_refs;"
-    return temp
+        matches.append(' $mdtarget isa marking-definition, has id "' + tid + '";')
+        inserts.append(" (marked: ${}, ref: $mdtarget) isa object_marking_refs;".format(source))
+    return matches, inserts
 
 
 '''
@@ -451,11 +557,10 @@ x_mitre_modified_by_ref sub relation,
     relates modified,
     relates ref;
 '''
-def x_mitre_modified_by_ref(sid, ttype, tid):
-    temp = 'match $source isa ' + ttype +', has id "' + sid + '";'
-    temp += ' $target isa identity, has id "' + tid + '";'
-    temp += " insert (modified: $source, ref: $target) isa x_mitre_modified_by_ref;"
-    return temp
+def x_mitre_modified_by_ref_template(source, tid):
+    match = ' $itarget isa identity, has id "' + tid + '";'
+    insert = " (modified: ${}, ref: $itarget) isa x_mitre_modified_by_ref;".format(source)
+    return match, insert
 
 
 '''
@@ -463,15 +568,136 @@ tactic_refs sub relation,
     relates owner,
     relates listed;
 
+tactics should be inserted before matrix
+
 fun(matrix["id"], tactic["id"])
 '''
-def tactic_refs_template(sid, tids):
-    temp = 'match $matrix isa matrix, has id "' + sid + '";'
+def tactic_refs_template(matrix, tids):
+    matches = []
+    inserts = []
+    count = 0
     for tid in tids:
-        temp += '$tactic isa tactic, has id "' + tid + '";'
-        temp += ' insert (owner: $matrix, listed: $tactic) isa tactic_refs;'
-    return temp
+        matches.append(' $tactic{} isa tactic, has id "'.format(count) + tid + '";')
+        inserts.append(' (owner: ${}, listed: $tactic{}) isa tactic_refs;'.format(matrix, count))
+        count += 1
+    return matches, inserts
 
 
+def addCommonRefs(entity, variable):
+    matches = []
+    inserts = []
+    # Add created_by_ref relation
+    created_by_ref = entity.get("created_by_ref")
+    if not created_by_ref:
+        logging.error("{} does not have created_by_ref property".format(entity))
+    else:
+        tmp_match, tmp_insert = created_by_ref_template(variable, created_by_ref)
+        matches.append(tmp_match)
+        inserts.append(tmp_insert)
+
+    # Add object_marking_refs relation
+    object_marking_refs = entity.get("object_marking_refs")
+    if not object_marking_refs:
+        logging.error("{} does not have object_marking_refs property".format(entity))
+    else:
+        tmp_matches, tmp_inserts = object_marking_ref_template(variable, object_marking_refs)
+        matches.extend(tmp_matches)
+        inserts.extend(tmp_inserts)
+
+    # Add x_mitre_modified_by_ref relation
+    x_mitre_modified_by_ref = entity.get("x_mitre_modified_by_ref")
+    if not x_mitre_modified_by_ref:
+        logging.error("{} does not have x_mitre_modified_by_ref property".format(entity))
+    else:
+        tmp_match, tmp_insert = x_mitre_modified_by_ref_template(variable, x_mitre_modified_by_ref)
+        matches.append(tmp_match)
+        inserts.append(tmp_insert)
+
+    return matches, inserts
+
+###############################################
+########### Add relations templates############
+###############################################
+
 '''
+basic_rel sub relation,
+    abstract,
+    owns id @key,
+    owns types,
+    owns spec_version,
+    owns created,
+    owns modified,
+    owns relationship_type,
+    owns revoked,
+    owns x_mitre_domains,
+    owns x_mitre_version,
+    owns description,
+    owns x_mitre_deprecated,
+    plays created_by_ref:created,
+    plays object_marking_refs:marked,
+    plays x_mitre_modified_by_ref:modified,
+    plays external_references:owner,
+    relates source_ref,
+    relates target_ref;
+
+output: , has id $id, ...,  has types $types
 '''
+def addCommonPpts(entity):
+    temp = ''
+    temp += addStr(entity, "id")
+    temp += addStr(entity, "types")
+    temp += addStr(entity, "spec_version")
+    temp += addDate(entity, "created")
+    temp += addDate(entity, "modified")
+    temp += addStr(entity, "relationship_type")
+    temp += addStr(entity, "revoked")
+    temp += addStr(entity, "x_mitre_version")
+    temp += addList(entity, "x_mitre_domains")
+    temp += addStr(entity, "description")
+    temp += addBool(entity, "x_mitre_deprecated")
+    return temp + ';'
+
+def parseRelationship(relation):
+    sid = relation.get("source_ref")
+    tid = relation.get("target_ref")
+    if not sid or not tid:
+        logging.error("Parsing relation error: {}".format(relation))
+        return
+    stype = sid.split("--")[0]
+    ttype = tid.split("--")[0]
+    rtype = relation.get("relationship_type")
+
+    stype = stixToAttackTerm[stype]
+    ttype = stixToAttackTerm[ttype]
+    rtype = RELATION_TYPE_TRANSFORM[rtype]
+    return stype, sid, ttype, tid, rtype
+
+# relationships
+def relationships_template(relation):
+    matches = []
+    inserts = []
+    stype, sid, ttype, tid, rtype = parseRelationship(relation)
+
+    matches.append(' $source isa {}, has id "{}";'.format(stype, sid))
+    matches.append(' $target isa {}, has id "{}";'.format(ttype, tid))
+
+    inserts.append(' $relat ({}: $source, {}: $target) isa {}'.format(RELATION_ACTORS_MAPPING[rtype][0],
+                                                                RELATION_ACTORS_MAPPING[rtype][1],
+                                                                rtype))
+    inserts.append(addCommonPpts(relation))
+
+    tmp_insert = ''
+    count = 0
+    external_references = relation.get("external_references", [])
+    for external_reference in external_references:
+        tmp_insert += external_reference_template(external_reference, "relat", count)
+        count += 1
+
+    inserts.append(tmp_insert)
+
+    # Add common *_ref relations
+    tmp_matches, tmp_inserts = addCommonRefs(relation, "relat")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+    return matches, inserts
+

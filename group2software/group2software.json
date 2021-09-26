@@ -152,19 +152,6 @@
         "StoneDrill": "malware",
         "Shamoon": "malware"
     },
-    "APT34": {
-        "certutil": "tool",
-        "POWRUNER": "malware",
-        "Net": "tool",
-        "netstat": "tool",
-        "Tasklist": "tool",
-        "Systeminfo": "tool",
-        "Reg": "tool",
-        "SEASHARPEE": "malware",
-        "Helminth": "malware",
-        "Mimikatz": "tool",
-        "PsExec": "tool"
-    },
     "APT37": {
         "ROKRAT": "malware",
         "KARAE": "malware",
@@ -540,12 +527,6 @@
         "Elise": "malware",
         "Emissary": "malware"
     },
-    "MONSOON": {
-        "AutoIt backdoor": "malware",
-        "BADNEWS": "malware",
-        "TINYTYPHON": "malware",
-        "Unknown Logger": "malware"
-    },
     "Machete": {
         "Machete": "malware"
     },
@@ -842,17 +823,6 @@
         "Penquin": "malware",
         "NBTscan": "tool"
     },
-    "UNC2452": {
-        "AdFind": "tool",
-        "Cobalt Strike": "malware",
-        "SUNBURST": "malware",
-        "TEARDROP": "malware",
-        "SUNSPOT": "malware",
-        "Mimikatz": "tool",
-        "Raindrop": "malware",
-        "GoldMax": "malware",
-        "Sibot": "malware"
-    },
     "Volatile Cedar": {
         "Explosive": "malware",
         "Caterpillar WebShell": "malware"
@@ -918,9 +888,6 @@
         "QuasarRAT": "tool",
         "esentutl": "tool",
         "AdFind": "tool"
-    },
-    "Charming Kitten": {
-        "DownPaper": "malware"
     },
     "Bouncing Golf": {}
 }
