@@ -1,7 +1,7 @@
 # mitre-attack-kg
 
 ## Introduction
-[MITRE ATT&CK](https://attack.mitre.org/) provides a lot of useful knowledge about adversary tactics, techniques, and tools. In order to make full use of this knowledge base, we establish a graph database and look forward to some new insights into attack fairs.
+[MITRE ATT&CK](https://attack.mitre.org/) provides a lot of useful knowledge about adversary tactics, techniques, and tools. In order to make full use of this knowledge base, we establish a graph database and look forward to some new insights into attack affairs.
 
 This repository mainly achieves two goals: 
 - Establishing a graph database.

@@ -47,7 +47,7 @@ def relationships_template(relation):
 
 In `main.py`, we load and parse `enterprise-attack.json` by `stix2`, then insert the parsed data into the database by putting every object in its corresponding template.
 
-We also validate the correctness of this database in `test.py`. We compare the [groups2software](../groups2software) result with the results of the following query:
+We also validate the correctness of this database in `test.py`. We compare the [group2software](../group2software) results with the results of the following query:
 ```
 match
 $groups isa groups, has name $gname;
