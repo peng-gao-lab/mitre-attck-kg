@@ -1,9 +1,20 @@
-# Design and construct TypeDB database
+# Design and establish TypeDB database
+## Introduction
+We establish the TypeDB database by TypeQL language, all the codes can be found in `schema.tql`. We test this database by inserting and reading some simple data items.
+
+## Requirements
     Software: TypeDB 2.3.3
     Language: TypeQL
 
 ## Usage:
+### Run server
+```shell
+$ typedb server
+```
+
 ### Create database
+
+Create a database named `mitre_attack`.
 
 ```shell
 $ cd ${this_dir} && typedb console
