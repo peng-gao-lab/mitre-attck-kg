@@ -14,5 +14,6 @@
     "x_mitre_impact_type",
     "aliases",
     "x_mitre_aliases",
-    "tactic_refs"
+    "tactic_refs",
+    "x_mitre_collection_layers"
 ]

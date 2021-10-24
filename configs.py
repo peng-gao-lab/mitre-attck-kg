@@ -3,7 +3,7 @@ import os
 
 # Get current workspace path
 ROOT = os.path.abspath(".")
-FILE_NAME = "enterprise-attack"
+FILE_NAME = "enterprise-attack-10.0"
 
 # main entity and properity entity, which will be entity in database
 MAIN_ENTITY = []
@@ -30,6 +30,8 @@ attackToStixTerm = {
     "group": ["intrusion-set"],
     "mitigation": ["course-of-action"],
     "matrix": ["x-mitre-matrix"],
+    "data_source": ["x-mitre-data-source"],
+    "data_component": ["x-mitre-data-component"]
 }
 stixToAttackTerm = {
     "attack-pattern": "technique",
@@ -38,7 +40,9 @@ stixToAttackTerm = {
     "malware": "software",
     "intrusion-set": "groups",
     "course-of-action": "mitigation",
-    "x-mitre-matrix": "matrix"
+    "x-mitre-matrix": "matrix",
+    "x-mitre-data-source": "data_source",
+    "x-mitre-data-component": "data_component"
 }
 
 # 
@@ -46,13 +50,15 @@ RELATION_ACTORS_MAPPING = {
         "use": ["user", "used"],
         "mitigate": ["mitigator", "mitigated"],
         "subtechnique-of": ["subtech", "supertech"],
-        "revoked-by": ["revoked", "revoker"]
+        "revoked-by": ["revoked", "revoker"],
+        "detect": ["detector", "detected"]
         }
 
 RELATION_TYPE_TRANSFORM = {
         "uses": "use",
         "mitigates": "mitigate",
         "subtechnique-of": "subtechnique-of",
-        "revoked-by": "revoked-by"
+        "revoked-by": "revoked-by",
+        "detects": "detect"
         }
 

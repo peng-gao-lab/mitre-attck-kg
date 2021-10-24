@@ -24,17 +24,20 @@ def getEntity(src):
         if data["type"] not in MAIN_ENTITY:
             MAIN_ENTITY.append(data["type"])
         for key in data.keys():
-            if type(data[key]) is list:
+            if type(data[key]) is list and len(data[key]) != 0:
+                # if len(data[key]) == 0:
+                    # logging.error(key)
+                    # pass
                 # if flag == True and key == "external_references":
                     # logging.debug("type(data[key][0]): {}".format(type(data[key][0])))
                     # logging.debug(data[key][0])
                     # flag = False
                 if type(data[key][0]) is not str and key not in LEVEL2_PPT:
                     LEVEL2_PPT.append(key)
-                if key not in PPT_ENTITY:
-                    PPT_ENTITY.append(key)
+                # if key not in PPT_ENTITY:
+                    # PPT_ENTITY.append(key)
     logging.debug("All main entity types:\nNumber:{}\nList:{}".format(len(MAIN_ENTITY), MAIN_ENTITY))
-    logging.debug("All property entity types:\nNumber:{}\nList:{}".format(len(PPT_ENTITY), PPT_ENTITY))
+    # logging.debug("All property entity types:\nNumber:{}\nList:{}".format(len(PPT_ENTITY), PPT_ENTITY))
     logging.debug("Level-2 propertities: {}".format(LEVEL2_PPT))
     return True
 
@@ -97,9 +100,10 @@ def saveStatistic():
     fn = os.path.join(DATA_PATH, MAIN_ENTITY_F + ".json")
     with open(fn, 'w') as fo:
         json.dump(MAIN_ENTITY, fo, indent=4)
-    fn = os.path.join(DATA_PATH, PPT_ENTITY_F + ".json")
-    with open(fn, 'w') as fo:
-        json.dump(PPT_ENTITY, fo, indent=4)
+    # property entity is level-2 property instead of property list
+    # fn = os.path.join(DATA_PATH, PPT_ENTITY_F + ".json")
+    # with open(fn, 'w') as fo:
+        # json.dump(PPT_ENTITY, fo, indent=4)
     # Save relationship types
     fn = os.path.join(DATA_PATH, RELAT_TYPE_F + ".json")
     with open(fn, 'w') as fo:
@@ -129,7 +133,7 @@ def main():
     getEntity(src)
     getProperties(src)
     getRelatType(src)
-    # printRelation(RELAT_TYPE)
+    printRelation(RELAT_TYPE)
     saveStatistic()
 
 

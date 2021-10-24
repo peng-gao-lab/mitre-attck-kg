@@ -9,5 +9,7 @@
     "tool",
     "x-mitre-tactic",
     "x-mitre-matrix",
+    "x-mitre-data-source",
+    "x-mitre-data-component",
     "marking-definition"
 ]

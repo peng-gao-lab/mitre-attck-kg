@@ -1,0 +1,47 @@
+DEBUG:root:Loading data from ../data/enterprise-attack-9.0.json
+DEBUG:root:Data loaded.
+INFO:root:Total items number: 12975
+DEBUG:root:All main entity types:
+Number:11
+List:['x-mitre-collection', 'attack-pattern', 'relationship', 'course-of-action', 'identity', 'intrusion-set', 'malware', 'tool', 'x-mitre-tactic', 'x-mitre-matrix', 'marking-definition']
+DEBUG:root:All property entity types:
+Number:16
+List:['object_marking_refs', 'x_mitre_contents', 'kill_chain_phases', 'external_references', 'x_mitre_data_sources', 'x_mitre_domains', 'x_mitre_permissions_required', 'x_mitre_platforms', 'x_mitre_contributors', 'x_mitre_system_requirements', 'x_mitre_defense_bypassed', 'x_mitre_effective_permissions', 'x_mitre_impact_type', 'aliases', 'x_mitre_aliases', 'tactic_refs']
+DEBUG:root:Level-2 propertities: ['x_mitre_contents', 'kill_chain_phases', 'external_references']
+DEBUG:root:Entity x-mitre-collection has 11 properties
+DEBUG:root:Entity attack-pattern has 28 properties
+DEBUG:root:Entity relationship has 17 properties
+DEBUG:root:Entity course-of-action has 16 properties
+DEBUG:root:Entity identity has 11 properties
+DEBUG:root:Entity intrusion-set has 17 properties
+DEBUG:root:Entity malware has 19 properties
+DEBUG:root:Entity tool has 18 properties
+DEBUG:root:Entity x-mitre-tactic has 14 properties
+DEBUG:root:Entity x-mitre-matrix has 14 properties
+DEBUG:root:Entity marking-definition has 8 properties
+DEBUG:root:Level2 property x_mitre_contents has 2 properties
+DEBUG:root:Level2 property kill_chain_phases has 2 properties
+DEBUG:root:Level2 property external_references has 4 properties
+INFO:root:Get 11 entities' properties
+INFO:root:Total relationship items number: 11359
+DEBUG:root:All relationship types: [['course-of-action', 'mitigates', 'attack-pattern'], ['intrusion-set', 'uses', 'malware'], ['intrusion-set', 'uses', 'attack-pattern'], ['malware', 'uses', 'attack-pattern'], ['intrusion-set', 'uses', 'tool'], ['tool', 'uses', 'attack-pattern'], ['malware', 'revoked-by', 'malware'], ['intrusion-set', 'revoked-by', 'intrusion-set'], ['attack-pattern', 'subtechnique-of', 'attack-pattern'], ['attack-pattern', 'revoked-by', 'attack-pattern']]
+course-of-action	=>	mitigates	=>	attack-pattern
+
+intrusion-set	=>	uses	=>	malware
+
+intrusion-set	=>	uses	=>	attack-pattern
+
+malware	=>	uses	=>	attack-pattern
+
+intrusion-set	=>	uses	=>	tool
+
+tool	=>	uses	=>	attack-pattern
+
+malware	=>	revoked-by	=>	malware
+
+intrusion-set	=>	revoked-by	=>	intrusion-set
+
+attack-pattern	=>	subtechnique-of	=>	attack-pattern
+
+attack-pattern	=>	revoked-by	=>	attack-pattern
+

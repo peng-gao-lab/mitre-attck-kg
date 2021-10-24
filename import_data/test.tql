@@ -1,6 +1,13 @@
 ## Output the mapping between groups and software
 match
-$groups isa groups, has name $gname;
-$software isa software, has name $sname;
-(user: $groups, used: $software) isa use;
-get $gname, $sname;
+## $groups isa groups, has name $gname;
+## $software isa software, has name $sname;
+## (user: $groups, used: $software) isa use;
+## get $gname, $sname;
+
+$cleaver isa groups, has name "Cleaver";
+$tech isa technique, has name $tname;
+(user: $cleaver, used: $tech) isa use;
+(user: $other_groups, used: $tech) isa use;
+$other_groups isa groups, has name $gname;
+get $tname, $gname; group $tname;

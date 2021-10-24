@@ -15,7 +15,7 @@ This repository mainly achieves two goals:
     |-- database        #TypeDB database establishment.
     |-- import_data     #Importing data from source file to database.
     |-- groups2software #Query the mapping between groups and software.
-    |-- utils           #Statistics of source data file.
+    |-- utils           #Statistics of source data.
 ```
 
 ## Requirements

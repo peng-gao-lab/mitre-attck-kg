@@ -27,7 +27,7 @@ $ cd ${this_dir} && typedb console
 
 > commit
 ```
-The database structure can be visilized by `TypeDB Studio`.
+The database structure can be visualized by `TypeDB Studio`.
 
 ### Insert some data
 

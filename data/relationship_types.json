@@ -48,5 +48,10 @@
         "attack-pattern",
         "revoked-by",
         "attack-pattern"
+    ],
+    [
+        "x-mitre-data-component",
+        "detects",
+        "attack-pattern"
     ]
 ]
