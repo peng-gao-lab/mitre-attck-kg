@@ -19,6 +19,9 @@ modified sub attribute,
     value datetime;
 x_mitre_version sub attribute,
     value string;
+## v2.1.0 update
+x_mitre_attack_spec_version sub attribute,
+    value string;
 
 ## Other entities attributes
 description sub attribute,
@@ -92,6 +95,9 @@ x_mitre_aliases sub attribute,
     value string;
 x_mitre_defense_bypassed sub attribute,
     value string;
+## v2.1.0 update
+x_mitre_collection_layers sub attribute,
+    value string;
 
 ## Common properties that most entities have.
 basic_entity sub entity,
@@ -103,7 +109,8 @@ basic_entity sub entity,
     owns created,
     owns modified,
     owns x_mitre_domains,
-    owns x_mitre_version;
+    owns x_mitre_version,
+    owns x_mitre_attack_spec_version;
 
 
 ###################
@@ -125,6 +132,7 @@ basic_rel sub relation,
     owns x_mitre_version,
     owns description,
     owns x_mitre_deprecated,
+    owns x_mitre_attack_spec_version,
     plays created_by_ref:created,
     plays object_marking_refs:marked,
     plays x_mitre_modified_by_ref:modified,
@@ -147,6 +155,11 @@ mitigate sub basic_rel,
 subtechnique-of sub basic_rel,
     relates subtech as source_ref,
     relates supertech as target_ref;
+
+## v2.1.0 update
+detect sub basic_rel,
+    relates detector as source_ref,
+    relates detected as target_ref;
 
 
 ## Relations from reference
@@ -172,6 +185,11 @@ created_by_ref sub relation,
 
 x_mitre_modified_by_ref sub relation,
     relates modified,
+    relates ref;
+
+## v2.1.0 update
+x_mitre_data_source_ref sub relation,
+    relates component,
     relates ref;
 
 
@@ -228,6 +246,8 @@ technique sub basic_entity,
     plays mitigate:mitigated,
     plays subtechnique-of:supertech,
     plays subtechnique-of:subtech,
+    # v2.1.0
+    plays detect:detected,
 
     plays external_references:owner,
     plays kill_chain_phases:owner,
@@ -306,6 +326,31 @@ matrix sub basic_entity,
     plays tactic_refs:owner,
 
     plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## v2.1.0 update
+## data_source => x-mitre-data-source
+data_source sub basic_entity,
+    owns description,
+    owns x_mitre_platforms,
+    owns x_mitre_collection_layers,
+    owns x_mitre_contributors,
+
+    plays x_mitre_data_source_ref:ref,
+    plays external_references:owner,
+    plays object_marking_refs:marked,
+    plays created_by_ref:created,
+    plays x_mitre_modified_by_ref:modified;
+
+## data_component => x-mitre-data-component
+data_component sub basic_entity,
+    owns description,
+
+    plays detect:detector,
+
+    plays x_mitre_data_source_ref:component,
     plays object_marking_refs:marked,
     plays created_by_ref:created,
     plays x_mitre_modified_by_ref:modified;

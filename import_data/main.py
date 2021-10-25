@@ -11,8 +11,10 @@ from typedb.common import exception
 # Setting
 logging.basicConfig(level=logging.DEBUG)
 DATA_PATH = os.path.join(os.path.pardir, "data")
+DATABASE_PATH = os.path.join(os.path.pardir, "database")
 insert_seq = ["identity", "marking-definition", "x-mitre-tactic", "x-mitre-matrix",
-        "attack-pattern", "intrusion-set", "tool", "malware", "course-of-action", "relationship"]
+        "attack-pattern", "intrusion-set", "tool", "malware",
+        "x-mitre-data-source", "x-mitre-data-component", "course-of-action", "relationship"]
 
 
 TYPE_TO_TEMPLATE = {
@@ -25,7 +27,9 @@ TYPE_TO_TEMPLATE = {
         "tool": software_template,
         "malware": software_template,
         "course-of-action": mitigation_template,
-        "relationship": relationships_template
+        "relationship": relationships_template,
+        "x-mitre-data-source": data_source_template,
+        "x-mitre-data-component": data_component_template
         }
 
 # remove revoked and depreceted objects
@@ -73,8 +77,8 @@ def insert_element(session, typee, element):
 def import_data(src):
     with TypeDB.core_client("localhost:1729") as client:
         with client.session("mitre_attack", SessionType.DATA) as session:
-            # for typee in insert_seq:
-            for typee in insert_seq[0:]:
+            for typee in insert_seq:
+            # for typee in insert_seq[3:4]:
                 query = [Filter("type", "=", typee)]
                 elementList = src.query(query)
                 # Remove deprecated elements
@@ -84,6 +88,25 @@ def import_data(src):
                 # for element in elementList[:2]:
                     insert_element(session, typee, element)
     logging.debug("Successfully finished!!!")
+    return True
+
+def renewDB():
+    with TypeDB.core_client("localhost:1729") as client:
+        if client.databases().contains("mitre_attack"):
+            client.databases().get("mitre_attack").delete()
+            logging.debug("Database has been deleted.")
+        client.databases().create("mitre_attack")
+        logging.debug("Database has been created.")
+        with client.session("mitre_attack", SessionType.SCHEMA) as session:
+            with session.transaction(TransactionType.WRITE) as transaction:
+                filePath = os.path.join(DATABASE_PATH, 'schema.tql')
+                with open(filePath, 'r') as fo:
+                    defineCode = fo.read()
+                    logging.debug("Schema readed")
+                transaction.query().define(defineCode)
+                transaction.commit()
+                logging.debug("Schema define committed")
+    return True
 
 
 # Load data from source file and import data to database
@@ -108,6 +131,7 @@ def main():
     else:
         logging.debug("Data loaded.")
 
+    renewDB()
     import_data(src)
     return True
 

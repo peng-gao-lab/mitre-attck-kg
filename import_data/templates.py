@@ -45,6 +45,18 @@ def addList(entity, ppts):
         res += ', has ' + ppts + ' "' + p.replace('"', '*') +'"'
     return res
 
+def addCommonPpts(entity):
+    temp = ''
+    temp += addStr(entity, "types")
+    temp += addStr(entity, "name")
+    temp += addStr(entity, "spec_version")
+    temp += addDate(entity, "created")
+    temp += addDate(entity, "modified")
+    temp += addStr(entity, "x_mitre_version")
+    temp += addList(entity, "x_mitre_domains")
+    temp += addStr(entity, "x_mitre_attack_spec_version")
+    return temp
+
 
 '''
     "identity": [
@@ -58,19 +70,14 @@ def addList(entity, ppts):
         "revoked",
         "object_marking_refs",
         "x_mitre_domains",
+        "x_mitre_attack_spec_version",
         "x_mitre_version"
     ],
     type => types
 '''
 def identity_template(identity):
     temp = ' $identity isa identity, has id "' + identity["id"] + '"'
-    temp += addStr(identity, "types")
-    temp += addStr(identity, "name")
-    temp += addStr(identity, "spec_version")
-    temp += addDate(identity, "created")
-    temp += addDate(identity, "modified")
-    temp += addStr(identity, "x_mitre_version")
-    temp += addList(identity, "x_mitre_domains")
+    temp += addCommonPpts(identity)
     temp += addBool(identity, "revoked")
     temp += addStr(identity, "identity_class")
     temp += ';'
@@ -144,6 +151,7 @@ def marking_definition_template(marking_definition):
         "x_mitre_impact_type",
         "x_mitre_network_requirements",
         "x_mitre_remote_support",
+        "x_mitre_attack_spec_version",
         "x_mitre_deprecated"
     ],
     type => types
@@ -151,13 +159,7 @@ def marking_definition_template(marking_definition):
 def technique_template(technique):
     # Common properties
     temp = ' $technique isa technique, has id "' + technique["id"] + '"'
-    temp += addStr(technique, "types")
-    temp += addStr(technique, "name")
-    temp += addStr(technique, "spec_version")
-    temp += addDate(technique, "created")
-    temp += addDate(technique, "modified")
-    temp += addStr(technique, "x_mitre_version")
-    temp += addList(technique, "x_mitre_domains")
+    temp += addCommonPpts(technique)
 
     # Particular properties
     temp += addBool(technique, "revoked")
@@ -221,6 +223,7 @@ def technique_template(technique):
         "x_mitre_platforms",
         "x_mitre_version",
         "x_mitre_contributors",
+        "x_mitre_attack_spec_version",
         "x_mitre_old_attack_id"
     ],
     "tool": [
@@ -241,6 +244,7 @@ def technique_template(technique):
         "x_mitre_platforms",
         "x_mitre_version",
         "x_mitre_contributors",
+        "x_mitre_attack_spec_version",
         "x_mitre_deprecated"
     ],
     type => types
@@ -248,13 +252,7 @@ def technique_template(technique):
 def software_template(software):
     # Common properties
     temp = ' $software isa software, has id "' + software["id"] + '"'
-    temp += addStr(software, "types")
-    temp += addStr(software, "name")
-    temp += addStr(software, "spec_version")
-    temp += addDate(software, "created")
-    temp += addDate(software, "modified")
-    temp += addStr(software, "x_mitre_version")
-    temp += addList(software, "x_mitre_domains")
+    temp += addCommonPpts(software)
 
     # Particular properties
     temp += addBool(software, "revoked")
@@ -265,6 +263,13 @@ def software_template(software):
     temp += addList(software, "x_mitre_aliases")
     temp += addStr(software, "x_mitre_old_attack_id")
     temp += ';'
+
+    # Add external_reference
+    count = 0
+    external_references = software.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "software", count)
+        count += 1
 
     matches = []
     inserts = []
@@ -295,6 +300,7 @@ def software_template(software):
         "x_mitre_domains",
         "x_mitre_modified_by_ref",
         "x_mitre_version",
+        "x_mitre_attack_spec_version",
         "x_mitre_deprecated"
     ],
     type => types
@@ -302,13 +308,7 @@ def software_template(software):
 def groups_template(groups):
     # Common properties
     temp = ' $groups isa groups, has id "' + groups["id"] + '"'
-    temp += addStr(groups, "types")
-    temp += addStr(groups, "name")
-    temp += addStr(groups, "spec_version")
-    temp += addDate(groups, "created")
-    temp += addDate(groups, "modified")
-    temp += addStr(groups, "x_mitre_version")
-    temp += addList(groups, "x_mitre_domains")
+    temp += addCommonPpts(groups)
 
     # Particular properties
     temp += addBool(groups, "revoked")
@@ -317,6 +317,13 @@ def groups_template(groups):
     temp += addBool(groups, "x_mitre_deprecated")
     temp += addList(groups, "aliases")
     temp += ';'
+
+    # Add external_reference
+    count = 0
+    external_references = groups.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "groups", count)
+        count += 1
 
     matches = []
     inserts = []
@@ -347,6 +354,7 @@ def groups_template(groups):
         "x_mitre_domains",
         "x_mitre_modified_by_ref",
         "x_mitre_version",
+        "x_mitre_attack_spec_version",
         "x_mitre_old_attack_id"
     ],
     type => types
@@ -354,19 +362,20 @@ def groups_template(groups):
 def mitigation_template(mitigation):
     # Common properties
     temp = ' $mitigation isa mitigation, has id "' + mitigation["id"] + '"'
-    temp += addStr(mitigation, "types")
-    temp += addStr(mitigation, "name")
-    temp += addStr(mitigation, "spec_version")
-    temp += addDate(mitigation, "created")
-    temp += addDate(mitigation, "modified")
-    temp += addStr(mitigation, "x_mitre_version")
-    temp += addList(mitigation, "x_mitre_domains")
+    temp += addCommonPpts(mitigation)
 
     # Particular properties
     temp += addBool(mitigation, "revoked")
     temp += addBool(mitigation, "x_mitre_deprecated")
     temp += addStr(mitigation, "x_mitre_old_attack_id")
     temp += ';'
+
+    # Add external_reference
+    count = 0
+    external_references = mitigation.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "mitigation", count)
+        count += 1
 
     matches = []
     inserts = []
@@ -395,6 +404,7 @@ def mitigation_template(mitigation):
         "spec_version",
         "x_mitre_domains",
         "x_mitre_modified_by_ref",
+        "x_mitre_attack_spec_version",
         "x_mitre_version"
     ],
     type => types
@@ -402,17 +412,19 @@ def mitigation_template(mitigation):
 def tactic_template(tactic):
     # Common properties
     temp = ' $tactic isa tactic, has id "' + tactic["id"] + '"'
-    temp += addStr(tactic, "types")
-    temp += addStr(tactic, "name")
-    temp += addStr(tactic, "spec_version")
-    temp += addDate(tactic, "created")
-    temp += addDate(tactic, "modified")
-    temp += addStr(tactic, "x_mitre_version")
-    temp += addList(tactic, "x_mitre_domains")
+    temp += addCommonPpts(tactic)
 
     # Particular properties
     temp += addStr(tactic, "x_mitre_shortname")
     temp += ';'
+
+    # Add external_reference
+    count = 0
+    external_references = tactic.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "tactic", count)
+        count += 1
+
     matches = []
     inserts = []
     inserts.append(temp)
@@ -439,6 +451,7 @@ def tactic_template(tactic):
         "spec_version",
         "x_mitre_domains",
         "x_mitre_modified_by_ref",
+        "x_mitre_attack_spec_version",
         "x_mitre_version"
     ],
     type => types
@@ -446,27 +459,126 @@ def tactic_template(tactic):
 def matrix_template(matrix):
     # Common properties
     temp = ' $matrix isa matrix, has id "' + matrix["id"] + '"'
-    temp += addStr(matrix, "types")
-    temp += addStr(matrix, "name")
-    temp += addStr(matrix, "spec_version")
-    temp += addDate(matrix, "created")
-    temp += addDate(matrix, "modified")
-    temp += addStr(matrix, "x_mitre_version")
-    temp += addList(matrix, "x_mitre_domains")
+    temp += addCommonPpts(matrix)
 
     # Particular properties
     temp += addStr(matrix, "description")
     temp += ';'
 
+    # Add external_reference
+    count = 0
+    external_references = matrix.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "matrix", count)
+        count += 1
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
     # Add tactic_refs
     tactic_refs = matrix.get("tactic_refs")
-    matches, inserts = tactic_refs_template("matrix", tactic_refs)
-    inserts.append(temp)
+    tmp_matches, tmp_inserts = tactic_refs_template("matrix", tactic_refs[:9])
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
 
     # Add common refs
     tmp_matches, tmp_inserts = addCommonRefs(matrix, "matrix")
     matches.extend(tmp_matches)
     inserts.extend(tmp_inserts)
+
+    return matches, inserts
+
+################
+## v2.1.0 update
+################
+'''
+    "x-mitre-data-source": {
+        "created_by_ref": false,
+        "object_marking_refs": false,
+        "modified": false,
+        "created": false,
+        "type": false,
+        "id": false,
+        "name": false,
+        "description": true,
+        "x_mitre_platforms": true,
+        "x_mitre_collection_layers": true,
+        "x_mitre_contributors": true,
+        "x_mitre_version": false,
+        "external_references": false,
+        "spec_version": false,
+        "x_mitre_attack_spec_version": false,
+        "x_mitre_domains": false,
+        "x_mitre_modified_by_ref": false
+    },
+'''
+def data_source_template(data_source):
+    # Common properties
+    temp = ' $data_source isa data_source, has id "' + data_source["id"] + '"'
+    temp += addCommonPpts(data_source)
+
+    # Particular properties
+    temp += addStr(data_source, "description")
+    temp += addList(data_source, "x_mitre_platforms")
+    temp += addList(data_source, "x_mitre_collection_layers")
+    temp += addList(data_source, "x_mitre_contributors")
+    temp += ';'
+
+    # Add external_reference
+    count = 0
+    external_references = data_source.get("external_references")
+    for external_reference in external_references:
+        temp += external_reference_template(external_reference, "data_source", count)
+        count += 1
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add common refs
+    tmp_matches, tmp_inserts = addCommonRefs(data_source, "data_source")
+    matches.extend(tmp_matches)
+    inserts.extend(tmp_inserts)
+
+    return matches, inserts
+
+'''
+    "x-mitre-data-component": {
+        "created_by_ref": false,
+        "object_marking_refs": false,
+        "modified": false,
+        "created": false,
+        "type": false,
+        "id": false,
+        "name": false,
+        "description": true,
+        "x_mitre_version": false,
+        "x_mitre_data_source_ref": false,
+        "spec_version": false,
+        "x_mitre_attack_spec_version": false,
+        "x_mitre_domains": false,
+        "x_mitre_modified_by_ref": false
+    },
+'''
+def data_component_template(data_component):
+    # Common properties
+    temp = ' $data_component isa data_component, has id "' + data_component["id"] + '"'
+    temp += addCommonPpts(data_component)
+
+    # Particular properties
+    temp += addStr(data_component, "description")
+    temp += ';'
+
+    matches = []
+    inserts = []
+    inserts.append(temp)
+
+    # Add x_mitre_data_source_ref
+    x_mitre_data_source_ref = data_component.get("x_mitre_data_source_ref")
+    match, insert = x_mitre_data_source_ref_template("data_component", x_mitre_data_source_ref)
+    inserts.append(insert)
+    matches.append(match)
 
     return matches, inserts
 
@@ -533,8 +645,8 @@ created_by_ref sub relation,
 fun(source, tid)
 '''
 def created_by_ref_template(source, tid):
-    match = ' $itarget isa identity, has id "' + tid + '";'
-    insert = " (created: ${}, ref: $itarget) isa created_by_ref;".format(source)
+    match = ' $citarget isa identity, has id "' + tid + '";'
+    insert = " (created: ${}, ref: $citarget) isa created_by_ref;".format(source)
     return match, insert
 
 
@@ -558,8 +670,8 @@ x_mitre_modified_by_ref sub relation,
     relates ref;
 '''
 def x_mitre_modified_by_ref_template(source, tid):
-    match = ' $itarget isa identity, has id "' + tid + '";'
-    insert = " (modified: ${}, ref: $itarget) isa x_mitre_modified_by_ref;".format(source)
+    match = ' $mitarget isa identity, has id "' + tid + '";'
+    insert = " (modified: ${}, ref: $mitarget) isa x_mitre_modified_by_ref;".format(source)
     return match, insert
 
 
@@ -570,17 +682,32 @@ tactic_refs sub relation,
 
 tactics should be inserted before matrix
 
-fun(matrix["id"], tactic["id"])
+fun(matrix, tactic["id"])
 '''
-def tactic_refs_template(matrix, tids):
+def tactic_refs_template(source, tids):
     matches = []
     inserts = []
     count = 0
     for tid in tids:
         matches.append(' $tactic{} isa tactic, has id "'.format(count) + tid + '";')
-        inserts.append(' (owner: ${}, listed: $tactic{}) isa tactic_refs;'.format(matrix, count))
+        inserts.append(' (owner: ${}, listed: $tactic{}) isa tactic_refs;'.format(source, count))
         count += 1
     return matches, inserts
+
+## v2.1.0 update
+'''
+x_mitre_data_source_ref sub relation,
+    relates component,
+    relates ref;
+
+data_source should be inserted before data_component
+
+fun(data_component, data_source["id"])
+'''
+def x_mitre_data_source_ref_template(source, tid):
+    match = ' $dstarget isa data_source, has id "{}";'.format(tid)
+    insert = ' (component: ${}, ref: $dstarget) isa x_mitre_data_source_ref;'.format(source)
+    return match, insert
 
 
 def addCommonRefs(entity, variable):
@@ -642,7 +769,7 @@ basic_rel sub relation,
 
 output: , has id $id, ...,  has types $types
 '''
-def addCommonPpts(entity):
+def addRelatPpts(entity):
     temp = ''
     temp += addStr(entity, "id")
     temp += addStr(entity, "types")
@@ -684,7 +811,7 @@ def relationships_template(relation):
     inserts.append(' $relat ({}: $source, {}: $target) isa {}'.format(RELATION_ACTORS_MAPPING[rtype][0],
                                                                 RELATION_ACTORS_MAPPING[rtype][1],
                                                                 rtype))
-    inserts.append(addCommonPpts(relation))
+    inserts.append(addRelatPpts(relation))
 
     tmp_insert = ''
     count = 0
