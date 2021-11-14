@@ -1,7 +1,7 @@
 #! python3
 # *_template functions definition
 import sys, logging
-sys.path.append("..")
+sys.path.append("../..")
 from configs import *
 
 # Setting

@@ -1,7 +1,7 @@
 #! python3
 import os, sys, json, logging
 
-sys.path.append("..")
+sys.path.append("../..")
 from configs import *
 from stix2 import Filter, MemoryStore
 from templates import *
@@ -10,7 +10,7 @@ from typedb.common import exception
 
 # Setting
 logging.basicConfig(level=logging.DEBUG)
-DATA_PATH = os.path.join(os.path.pardir, "data")
+DATA_PATH = os.path.join("../../", "data")
 DATABASE_PATH = os.path.join(os.path.pardir, "database")
 insert_seq = ["identity", "marking-definition", "x-mitre-tactic", "x-mitre-matrix",
         "attack-pattern", "intrusion-set", "tool", "malware",

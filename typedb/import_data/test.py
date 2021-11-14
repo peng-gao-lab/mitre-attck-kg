@@ -1,7 +1,7 @@
 #! python3
 import os, sys, json, logging
 
-sys.path.append("..")
+sys.path.append("../..")
 from configs import *
 from typedb.client import TypeDB, SessionType, TransactionType
 from typedb.common import exception

@@ -12,7 +12,8 @@ This repository mainly achieves two goals:
 ```
 |-- {Current directory}
     |-- data            #Source, result and intermediate files.
-    |-- database        #TypeDB database establishment.
+    |-- typedb          #TypeDB database establishment.
+    |-- neo4j           #neo4j database establishment.
     |-- import_data     #Importing data from source file to database.
     |-- groups2software #Query the mapping between groups and software.
     |-- utils           #Statistics of source data.
